@@ -3,240 +3,376 @@
 <head>
   <meta charset="UTF-8">
   <title>🎁 Jack Pop Pro</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    /*────────────────────────────────────────────────────────────────────────
+      Root & Reset
+    ────────────────────────────────────────────────────────────────────────*/
     * { box-sizing:border-box; margin:0; padding:0 }
     :root {
-      --bg: #121212;
-      --fg: #e0e0e0;
-      --accent: #ff9800;
-      --card: #1f1f1f;
-      --rake: 0.05;
-      --max-width: 600px;
+      --bg: #1e1e2f;
+      --card-bg: #282a3a;
+      --fg: #e0e0e7;
+      --accent: #ff6b6b;
+      --accent-hover: #ff8787;
+      --rake: 0.05;        /* 5% */
+      --max-w: 480px;
+      --font: 'Poppins', sans-serif;
     }
     html, body {
-      height:100%; font-family:sans-serif;
-      background: var(--bg);
-      color: var(--fg);
+      height:100%; font-family: var(--font);
+      background: var(--bg); color: var(--fg);
       display:flex; align-items:center; justify-content:center;
     }
+    button { cursor:pointer; }
+
+    /*────────────────────────────────────────────────────────────────────────
+      Container & Layout
+    ────────────────────────────────────────────────────────────────────────*/
     .container {
-      width: 90%;
-      max-width: var(--max-width);
-      background: var(--card);
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-      overflow: hidden;
+      width:90%; max-width:var(--max-w);
+      background: var(--card-bg);
+      border-radius:12px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.5);
+      overflow:hidden;
     }
     header {
       background: var(--accent);
-      padding: 1rem;
       text-align:center;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 1.1rem;
-      color: #121212;
+      padding:1rem;
+      font-size:1.2rem;
+      font-weight:600;
+      color:#121212;
     }
+    main { padding:1rem; }
     footer {
-      background: #181818;
-      padding: 0.6rem;
-      font-size: 0.7rem;
-      text-align: center;
-      color: #777;
+      background:#1a1a28;
+      text-align:center;
+      padding:0.6rem;
+      font-size:0.75rem;
+      color:#777;
     }
-    .screen { display: none; padding: 1rem; }
-    .active { display: block; }
-    .card { background: #232323; border-radius:8px; padding:1rem; margin: 1rem 0; }
-    h2 { font-family: 'Press Start 2P', monospace; font-size:1rem; margin-bottom:0.5rem; }
-    button, input[type="checkbox"] { cursor: pointer; }
-    input[type="checkbox"] { transform: scale(1.2); margin-right:0.5rem; }
-    .link { color: var(--accent); cursor:pointer; text-decoration:underline; }
+
+    /*────────────────────────────────────────────────────────────────────────
+      Screens
+    ────────────────────────────────────────────────────────────────────────*/
+    .screen { display:none; }
+    .active { display:block; }
+
+    .card {
+      background: #323347;
+      padding:1rem;
+      border-radius:8px;
+      margin-bottom:1rem;
+      box-shadow:0 2px 6px rgba(0,0,0,0.4);
+    }
+    h2 {
+      font-size:1rem;
+      margin-bottom:0.5rem;
+      font-weight:600;
+    }
+    p, li { font-size:0.9rem; line-height:1.4; }
+    ul { margin-left:1.2rem; }
+
+    /*────────────────────────────────────────────────────────────────────────
+      Buttons & Inputs
+    ────────────────────────────────────────────────────────────────────────*/
     .btn {
       display:inline-block;
       background: var(--accent);
       color: #121212;
       border:none;
       border-radius:30px;
-      padding: 0.6rem 1rem;
-      font-family: 'Press Start 2P', monospace;
-      font-size:0.75rem;
+      padding:0.6rem 1.2rem;
+      font-weight:600;
       margin:0.5rem 0;
-      box-shadow: 0 0 6px rgba(255,152,0,0.7);
-      transition: transform .15s, box-shadow .15s;
+      transition: background .2s, transform .1s;
     }
-    .btn:hover:not(:disabled) { transform: scale(1.05); box-shadow:0 0 16px var(--accent); }
-    .btn:disabled { opacity:0.4; box-shadow:none; cursor:default; }
-    #controls { display:flex; flex-wrap: wrap; gap:1rem; align-items:center; justify-content:center; }
-    #controls label { display:flex; align-items:center; }
-    #mult { text-align:center; font-size:2.5rem; margin:0.5rem 0; font-family: 'Press Start 2P', monospace; }
-    .game-area { position:relative; width:100%; padding-top:56%; }
-    #head {
-      position:absolute; bottom:0; left:50%;
+    .btn:hover:not(:disabled) { background: var(--accent-hover); transform:scale(1.03); }
+    .btn:disabled { opacity:0.4; cursor:default; }
+    input[type="checkbox"] { transform:scale(1.2); margin-right:0.5rem; }
+    input[type="text"] {
+      width:100%; padding:0.6rem; margin:0.5rem 0;
+      border:none; border-radius:6px;
+      background:#202033; color:#ddd;
+    }
+
+    /*────────────────────────────────────────────────────────────────────────
+      Game UI
+    ────────────────────────────────────────────────────────────────────────*/
+    #multiplier {
+      text-align:center;
+      font-size:2.2rem;
+      font-weight:600;
+      margin:0.6rem 0;
+      font-family: var(--font);
+    }
+    .game-area {
+      position:relative;
+      width:100%; padding-top:56.25%; /*16:9*/
+      background:#1d1d2b; border-radius:8px;
+      overflow:hidden;
+    }
+    #jackHead {
+      position:absolute;
+      bottom:0; left:50%;
       width:80px; height:80px;
       margin-left:-40px;
-      background: radial-gradient(circle at 30% 30%, #ff7043, #d84315);
+      background: radial-gradient(circle at 30% 30%, #ff7f50, #d84315);
       border-radius:50%;
-      box-shadow: 0 8px 12px rgba(0,0,0,0.5);
+      box-shadow:0 8px 12px rgba(0,0,0,0.5);
       transform: translateY(100%);
-      transition: transform 0.1s linear;
+     transition: transform .1s linear;
     }
     .progress-bar {
       width:100%; height:8px;
-      background: #333; border-radius:4px;
-      overflow:hidden; margin-top:0.5rem;
+      background:#202033; border-radius:4px; overflow:hidden;
+      margin:0.5rem 0;
     }
     .progress-bar > div {
-      width:0%; height:100%; background: var(--accent);
-      transition: width 0.1s linear;
+      width:0%; height:100%;
+      background: var(--accent);
+      transition: width .1s linear;
     }
-    @media (max-width: 400px) {
-      #head { width:60px; height:60px; margin-left:-30px; }
-      .btn { font-size:0.6rem; }
+    .actions { text-align:center; margin-top:0.5rem; }
+    .link { color:var(--accent); cursor:pointer; text-decoration:underline; font-size:0.85rem; }
+
+    /*────────────────────────────────────────────────────────────────────────
+      Responsive
+    ────────────────────────────────────────────────────────────────────────*/
+    @media(max-width:400px) {
+      #jackHead { width:60px; height:60px; margin-left:-30px; }
+      .btn { font-size:0.85rem; padding:0.5rem 1rem; }
     }
   </style>
 </head>
 <body>
+
   <div class="container">
-    <header>🎁 Jack Pop Pro</header>
-    <!-- AGE GATE -->
+
+    <!-- Age Gate -->
     <div id="ageGate" class="screen active">
       <div class="card">
-        <h2>☑️ AGE VERIFICATION</h2>
-        <label><input type="checkbox" id="ageCheck"> I am 18+ and agree to virtual currency only.</label>
+        <h2>Age Verification</h2>
+        <p>You must be 18+ to play. All wagers are in virtual coins—no real money payouts.</p>
+        <label><input type="checkbox" id="ageCheck"> I confirm that I am 18 or older</label>
         <button class="btn" id="ageNext" disabled>CONTINUE</button>
       </div>
     </div>
-    <!-- LOGIN -->
+
+    <!-- Login -->
     <div id="login" class="screen">
       <div class="card">
-        <h2>🔑 ENTER USERNAME</h2>
-        <input type="text" id="username" placeholder="Your name" />
+        <h2>Enter Username</h2>
+        <input type="text" id="username" placeholder="Choose a nickname" />
         <button class="btn" id="loginBtn">ENTER LOBBY</button>
       </div>
     </div>
-    <!-- LOBBY -->
+
+    <!-- Lobby -->
     <div id="lobby" class="screen">
       <div class="card">
-        <h2>🏠 LOBBY</h2>
-        <p>Welcome, <strong id="labelUser"></strong></p>
-        <p>Balance: 🪙<span id="balance">0</span></p>
-        <button class="btn" id="toGame">PLAY</button>
-        <button class="btn" id="toRules">RULES</button>
+        <h2>🏠 Lobby</h2>
+        <p>Welcome, <strong id="labelUser"></strong>!</p>
+        <p>Balance: 🪙<span id="balance">0</span> coins</p>
+        <div class="actions">
+          <button class="btn" id="playBtn">PLAY</button>
+          <button class="btn" id="shopBtn">SHOP</button>
+          <button class="btn" id="rulesBtn">RULES</button>
+        </div>
       </div>
     </div>
-    <!-- RULES -->
-    <div id="rules" class="screen">
-      <button class="btn link" id="backRules">← BACK</button>
+
+    <!-- Shop -->
+    <div id="shop" class="screen">
+      <button class="btn link" id="backFromShop">← BACK</button>
       <div class="card">
-        <h2>📖 HOW TO PLAY</h2>
+        <h2>Coin Shop</h2>
+        <div class="card" style="background: #23233a;">
+          <p>10 coins — $1</p>
+          <button class="btn buy-btn" data-coins="10">$1</button>
+        </div>
+        <div class="card" style="background: #23233a;">
+          <p>60 coins — $5</p>
+          <button class="btn buy-btn" data-coins="60">$5</button>
+        </div>
+        <div class="card" style="background: #23233a;">
+          <p>130 coins — $10</p>
+          <button class="btn buy-btn" data-coins="130">$10</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rules -->
+    <div id="rules" class="screen">
+      <button class="btn link" id="backFromRules">← BACK</button>
+      <div class="card">
+        <h2>How to Play</h2>
         <ul>
-          <li>Bet 1 coin per round (auto-deducted).</li>
-          <li>Click <strong>POP!</strong> before the head pops.</li>
-          <li>Multiplier grows +0.5×/s. Crash at 2–30 s.</li>
-          <li>Payout = <code>1×multiplier×(1−5% rake)</code>.</li>
+          <li>Each round costs 1 coin (auto-deducted).</li>
+          <li>Click <strong>POP!</strong> to cash out your multiplier before the head pops.</li>
+          <li>Multiplier grows +0.5× per second; head “pops” at a random 2–30 s.</li>
+          <li>Payout = <code>1 × multiplier × (1 − 5% rake)</code></li>
+          <li>If you wait too long and it pops, you lose your coin.</li>
         </ul>
       </div>
     </div>
-    <!-- GAME -->
+
+    <!-- Game -->
     <div id="game" class="screen">
-      <button class="btn link" id="quitGame">← LOBBY</button>
-      <div id="mult">1.00×</div>
+      <button class="btn link" id="backFromGame">← LOBBY</button>
+
+      <div id="multiplier">1.00×</div>
       <div class="game-area">
-        <div id="head"></div>
+        <div id="jackHead"></div>
       </div>
       <div class="progress-bar"><div></div></div>
-      <div id="controls">
+
+      <div class="actions">
         <button class="btn" id="startBtn">START</button>
         <button class="btn" id="popBtn" disabled>POP!</button>
       </div>
     </div>
+
+    <!-- Footer -->
     <footer>
-      ©2025 Jack Pop Pro — Virtual coins only • 5% house rake • 18+ • Play responsibly  
+      © 2025 Jack Pop Pro • Virtual coins only • 5% house rake • 18+ • Play responsibly
     </footer>
+
   </div>
+
   <script>
-  // ── State ─────────────────────────────────────────────────────────────────
-  let running=false, startT=0, crashT=0, balance=100, high=1, mult=1;
-  const rake = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--rake'));
-  // ── DOM Refs ───────────────────────────────────────────────────────────────
-  const screens = ['ageGate','login','lobby','rules','game'];
-  const show = id => {
-    screens.forEach(s=>document.getElementById(s).classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  };
-  const ageCheck = document.getElementById('ageCheck'),
-        ageNext  = document.getElementById('ageNext'),
-        loginBtn = document.getElementById('loginBtn'),
-        userIn   = document.getElementById('username'),
-        labelU   = document.getElementById('labelUser'),
-        balEl    = document.getElementById('balance'),
-        multEl   = document.getElementById('mult'),
-        head     = document.getElementById('head'),
-        bar      = document.querySelector('.progress-bar > div'),
-        startBtn = document.getElementById('startBtn'),
-        popBtn   = document.getElementById('popBtn'),
-        toRules  = document.getElementById('toRules'),
-        backRules= document.getElementById('backRules'),
-        toGame   = document.getElementById('toGame'),
-        quitGame = document.getElementById('quitGame');
-  // ── Age Gate ───────────────────────────────────────────────────────────────
-  ageCheck.onchange = ()=> ageNext.disabled = !ageCheck.checked;
-  ageNext.onclick    = ()=> show('login');
-  // ── Login ─────────────────────────────────────────────────────────────────
-  loginBtn.onclick = ()=>{
+  /*────────────────────────────────────────────────────────────────────────
+    State & Elements
+  ────────────────────────────────────────────────────────────────────────*/
+  let balance = 100, highScore = 1, running = false,
+      startT = 0, crashT = 0;
+
+  const rake = parseFloat(getComputedStyle(document.documentElement)
+                  .getPropertyValue('--rake'));
+
+  const screens = ['ageGate','login','lobby','shop','rules','game'];
+  const show = id => screens.forEach(s=>
+    document.getElementById(s).classList.toggle('active', s===id)
+  );
+
+  const ageCheck  = document.getElementById('ageCheck'),
+        ageNext   = document.getElementById('ageNext'),
+        loginBtn  = document.getElementById('loginBtn'),
+        userIn    = document.getElementById('username'),
+        labelUser = document.getElementById('labelUser'),
+        balEl     = document.getElementById('balance'),
+        playBtn   = document.getElementById('playBtn'),
+        shopBtn   = document.getElementById('shopBtn'),
+        rulesBtn  = document.getElementById('rulesBtn'),
+        backShop  = document.getElementById('backFromShop'),
+        backRules = document.getElementById('backFromRules'),
+        backGame  = document.getElementById('backFromGame'),
+        buyBtns   = document.querySelectorAll('.buy-btn'),
+        multiplierEl = document.getElementById('multiplier'),
+        jackHead  = document.getElementById('jackHead'),
+        bar       = document.querySelector('.progress-bar > div'),
+        startBtn  = document.getElementById('startBtn'),
+        popBtn    = document.getElementById('popBtn');
+
+  /*────────────────────────────────────────────────────────────────────────
+    Age Gate
+  ────────────────────────────────────────────────────────────────────────*/
+  ageCheck.onchange = () => ageNext.disabled = !ageCheck.checked;
+  ageNext.onclick    = () => show('login');
+
+  /*────────────────────────────────────────────────────────────────────────
+    Login
+  ────────────────────────────────────────────────────────────────────────*/
+  loginBtn.onclick = () => {
     const name = userIn.value.trim();
-    if(!name) return alert('Enter a username');
-    labelU.textContent = name;
-    balEl.textContent  = balance;
+    if (!name) return alert('Enter a username.');
+    labelUser.textContent = name;
+    balEl.textContent     = balance;
     show('lobby');
   };
-  // ── Navigation ────────────────────────────────────────────────────────────
-  toRules.onclick = ()=> show('rules');
-  backRules.onclick = ()=> show('lobby');
-  toGame.onclick  = ()=> show('game');
-  quitGame.onclick= ()=> show('lobby');
-  // ── Game Logic ────────────────────────────────────────────────────────────
-  function rndTime(){ return 2 + Math.random()*28; }
-  function startRound(){
-    if(running) return;
-    if(balance < 1) return alert('Not enough coins');
-    balance--; balEl.textContent=balance;
-    crashT = rndTime(); startT = performance.now();
+
+  /*────────────────────────────────────────────────────────────────────────
+    Lobby Navigation
+  ────────────────────────────────────────────────────────────────────────*/
+  playBtn.onclick  = () => {
+    if (balance < 1) return alert('Not enough coins—visit the shop!');
+    show('game');
+  };
+  shopBtn.onclick  = () => show('shop');
+  rulesBtn.onclick = () => show('rules');
+  backShop.onclick = () => show('lobby');
+  backRules.onclick= () => show('lobby');
+  backGame.onclick = () => show('lobby');
+
+  /*────────────────────────────────────────────────────────────────────────
+    Shop Purchases (placeholder)
+  ────────────────────────────────────────────────────────────────────────*/
+  buyBtns.forEach(btn => {
+    btn.onclick = () => {
+      const coins = +btn.dataset.coins;
+      balance += coins;
+      balEl.textContent = balance;
+      alert(`Purchased ${coins} coins!`);
+      show('lobby');
+    };
+  });
+
+  /*────────────────────────────────────────────────────────────────────────
+    Game Logic
+  ────────────────────────────────────────────────────────────────────────*/
+  function rndCrash() { return 2 + Math.random()*28; }
+
+  startBtn.onclick = () => {
+    balance--; balEl.textContent = balance;
+    crashT = rndCrash();
+    startT = performance.now();
     running = true;
-    startBtn.disabled = true; popBtn.disabled=false;
+    startBtn.disabled = true;
+    popBtn.disabled   = false;
     requestAnimationFrame(loop);
-  }
-  function settle(cashed){
-    const elapsed = (performance.now()-startT)/1000;
-    const m = 1 + Math.min(elapsed, crashT)*0.5;
-    if(cashed && elapsed<crashT){
-      const payout = Math.floor(1*m*(1-rake));
+  };
+
+  popBtn.onclick = () => {
+    if (!running) return;
+    settle(true);
+  };
+
+  function settle(cashed) {
+    const elapsed = (performance.now() - startT)/1000;
+    const m = 1 + Math.min(elapsed, crashT) * 0.5;
+    if (cashed && elapsed < crashT) {
+      const payout = Math.floor(1 * m * (1 - rake));
       balance += payout;
+      highScore = Math.max(highScore, m);
       alert(`You popped at ${m.toFixed(2)}× and won ${payout} coins!`);
-      high = Math.max(high,m);
     } else {
-      if(!cashed) alert('Too late—the head popped!');
+      alert('Too late—the head popped!');
     }
-    balEl.textContent = balance;
-    running=false;
-    startBtn.disabled=false; popBtn.disabled=true;
+    balEl.textContent    = balance;
+    multiplierEl.textContent = '1.00×';
+    running = false;
+    startBtn.disabled = false;
+    popBtn.disabled   = true;
+    jackHead.style.transform = 'translateY(100%)';
+    bar.style.width           = '0%';
   }
-  startBtn.onclick = ()=> startRound();
-  popBtn.onclick   = ()=> running && settle(true);
-  function loop(ts){
-    if(!running) return;
-    const elapsed = (ts-startT)/1000;
-    mult = 1 + elapsed*0.5;
-    multEl.textContent = mult.toFixed(2)+'×';
-    // update head & bar
-    const p = Math.min(1, elapsed/crashT);
-    head.style.transform = `translateY(${100 - p*100}%)`;
+
+  function loop(ts) {
+    if (!running) return;
+    const elapsed = (ts - startT)/1000;
+    const m = 1 + elapsed * 0.5;
+    multiplierEl.textContent = m.toFixed(2) + '×';
+
+    // animate head & bar
+    const p = Math.min(1, elapsed / crashT);
+    jackHead.style.transform = `translateY(${100 - p*100}%)`;
     bar.style.width = `${p*100}%`;
-    if(elapsed>=crashT){
-      settle(false);
-      return;
-    }
-    requestAnimationFrame(loop);
+
+    if (elapsed >= crashT) settle(false);
+    else requestAnimationFrame(loop);
   }
   </script>
+
 </body>
 </html> 
