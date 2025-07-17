@@ -3,334 +3,240 @@
 <head>
   <meta charset="UTF-8">
   <title>🎁 Jack Pop Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
-    /* RESET + ROOT COLORS */
     * { box-sizing:border-box; margin:0; padding:0 }
     :root {
-      --bg:#121212; --fg:#eee; --accent:#ff9800;
-      --card:#1f1f1f; --rake:0.05; /* 5% house rake */
+      --bg: #121212;
+      --fg: #e0e0e0;
+      --accent: #ff9800;
+      --card: #1f1f1f;
+      --rake: 0.05;
+      --max-width: 600px;
     }
-    body {
-      background:var(--bg); color:var(--fg);
-      font-family:sans-serif; min-height:100vh;
-      display:flex; flex-direction:column;
+    html, body {
+      height:100%; font-family:sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .container {
+      width: 90%;
+      max-width: var(--max-width);
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      overflow: hidden;
     }
     header {
-      background:var(--accent); text-align:center;
-      padding:1rem; font-size:1.6rem;
-      box-shadow:0 2px 6px rgba(0,0,0,0.5);
+      background: var(--accent);
+      padding: 1rem;
+      text-align:center;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1.1rem;
+      color: #121212;
     }
-    .screen { display:none; flex:1; overflow:auto; padding:1rem; max-width:600px; margin:auto; }
-    .active { display:flex; flex-direction:column; }
-    .card {
-      background:var(--card); border-radius:8px;
-      padding:1rem; margin:0.5rem 0; box-shadow:0 0 8px #000;
+    footer {
+      background: #181818;
+      padding: 0.6rem;
+      font-size: 0.7rem;
+      text-align: center;
+      color: #777;
     }
+    .screen { display: none; padding: 1rem; }
+    .active { display: block; }
+    .card { background: #232323; border-radius:8px; padding:1rem; margin: 1rem 0; }
+    h2 { font-family: 'Press Start 2P', monospace; font-size:1rem; margin-bottom:0.5rem; }
+    button, input[type="checkbox"] { cursor: pointer; }
+    input[type="checkbox"] { transform: scale(1.2); margin-right:0.5rem; }
+    .link { color: var(--accent); cursor:pointer; text-decoration:underline; }
     .btn {
-      background:var(--accent); color:#121212; border:none;
-      padding:0.7rem 1.2rem; border-radius:30px;
-      cursor:pointer; margin:0.5rem 0;
-      box-shadow:0 0 6px rgba(255,152,0,0.7);
-      transition:transform .1s;
+      display:inline-block;
+      background: var(--accent);
+      color: #121212;
+      border:none;
+      border-radius:30px;
+      padding: 0.6rem 1rem;
+      font-family: 'Press Start 2P', monospace;
+      font-size:0.75rem;
+      margin:0.5rem 0;
+      box-shadow: 0 0 6px rgba(255,152,0,0.7);
+      transition: transform .15s, box-shadow .15s;
     }
-    .btn:disabled { opacity:0.4; cursor:default; box-shadow:none; }
-    .btn:hover:not(:disabled) { transform:scale(1.05); }
-    input, select { width:100%; padding:0.6rem; margin:0.4rem 0; border:none; border-radius:4px; }
-    #canvas { background:#222; border-radius:8px; display:block; margin:1rem auto; }
-    #mult { text-align:center; font-size:3rem; margin:1rem 0; }
-    footer { text-align:center; font-size:0.8rem; padding:0.5rem; color:#888; }
-    .link { color:var(--accent); text-decoration:underline; cursor:pointer; }
-    table { width:100%; border-collapse:collapse; }
-    th,td { padding:0.5rem; text-align:left; border-bottom:1px solid #333; }
+    .btn:hover:not(:disabled) { transform: scale(1.05); box-shadow:0 0 16px var(--accent); }
+    .btn:disabled { opacity:0.4; box-shadow:none; cursor:default; }
+    #controls { display:flex; flex-wrap: wrap; gap:1rem; align-items:center; justify-content:center; }
+    #controls label { display:flex; align-items:center; }
+    #mult { text-align:center; font-size:2.5rem; margin:0.5rem 0; font-family: 'Press Start 2P', monospace; }
+    .game-area { position:relative; width:100%; padding-top:56%; }
+    #head {
+      position:absolute; bottom:0; left:50%;
+      width:80px; height:80px;
+      margin-left:-40px;
+      background: radial-gradient(circle at 30% 30%, #ff7043, #d84315);
+      border-radius:50%;
+      box-shadow: 0 8px 12px rgba(0,0,0,0.5);
+      transform: translateY(100%);
+      transition: transform 0.1s linear;
+    }
+    .progress-bar {
+      width:100%; height:8px;
+      background: #333; border-radius:4px;
+      overflow:hidden; margin-top:0.5rem;
+    }
+    .progress-bar > div {
+      width:0%; height:100%; background: var(--accent);
+      transition: width 0.1s linear;
+    }
+    @media (max-width: 400px) {
+      #head { width:60px; height:60px; margin-left:-30px; }
+      .btn { font-size:0.6rem; }
+    }
   </style>
 </head>
 <body>
-
-  <header>🎁 Jack Pop Pro</header>
-
-  <!-- 1) AGE GATE -->
-  <div id="ageGate" class="screen active">
-    <div class="card">
-      <h2>👥 Age Verification</h2>
-      <p>You must be 18+ to play. Please confirm:</p>
-      <label><input type="checkbox" id="ageCheck"> I am 18 years old or older</label>
-      <button class="btn" id="ageNext" disabled>Continue</button>
+  <div class="container">
+    <header>🎁 Jack Pop Pro</header>
+    <!-- AGE GATE -->
+    <div id="ageGate" class="screen active">
+      <div class="card">
+        <h2>☑️ AGE VERIFICATION</h2>
+        <label><input type="checkbox" id="ageCheck"> I am 18+ and agree to virtual currency only.</label>
+        <button class="btn" id="ageNext" disabled>CONTINUE</button>
+      </div>
     </div>
-  </div>
-
-  <!-- 2) LOGIN / USERNAME -->
-  <div id="login" class="screen">
-    <div class="card">
-      <h2>🔐 Enter Username</h2>
-      <input type="text" id="username" placeholder="Your nickname">
-      <button class="btn" id="loginBtn">Enter Lobby</button>
+    <!-- LOGIN -->
+    <div id="login" class="screen">
+      <div class="card">
+        <h2>🔑 ENTER USERNAME</h2>
+        <input type="text" id="username" placeholder="Your name" />
+        <button class="btn" id="loginBtn">ENTER LOBBY</button>
+      </div>
     </div>
-  </div>
-
-  <!-- 3) LOBBY -->
-  <div id="lobby" class="screen">
-    <div class="card">
-      <h2>🏠 Lobby</h2>
-      <p>Welcome, <strong id="labelUser"></strong></p>
-      <p>Balance: 🪙<span id="balance">0</span> | High Score: <span id="highScore">1.00</span>×</p>
-      <button class="btn" id="toShop">💰 Buy Coins</button>
-      <button class="btn" id="toGame">🎮 Play</button>
-      <button class="btn" id="toRules">📖 Rules</button>
-      <button class="btn" id="toLeaders">🏅 Leaderboard</button>
+    <!-- LOBBY -->
+    <div id="lobby" class="screen">
+      <div class="card">
+        <h2>🏠 LOBBY</h2>
+        <p>Welcome, <strong id="labelUser"></strong></p>
+        <p>Balance: 🪙<span id="balance">0</span></p>
+        <button class="btn" id="toGame">PLAY</button>
+        <button class="btn" id="toRules">RULES</button>
+      </div>
     </div>
-  </div>
-
-  <!-- 4) SHOP -->
-  <div id="shop" class="screen">
-    <button class="btn" id="backLobby1">← Back to Lobby</button>
-    <div class="card">
-      <h2>💰 Coin Shop</h2>
-      <table>
-        <tr><th>Bundle</th><th>Price</th><th></th></tr>
-        <tr><td>1 Coin</td><td>$1</td><td><button class="btn buy" data-coins="1" data-amount="1">$1</button></td></tr>
-        <tr><td>6 Coins</td><td>$5</td><td><button class="btn buy" data-coins="6" data-amount="5">$5</button></td></tr>
-        <tr><td>13 Coins</td><td>$10</td><td><button class="btn buy" data-coins="13" data-amount="10">$10</button></td></tr>
-        <tr><td>26 Coins</td><td>$20</td><td><button class="btn buy" data-coins="26" data-amount="20">$20</button></td></tr>
-        <tr><td>70 Coins</td><td>$50</td><td><button class="btn buy" data-coins="70" data-amount="50">$50</button></td></tr>
-        <tr><td>150 Coins</td><td>$100</td><td><button class="btn buy" data-coins="150" data-amount="100">$100</button></td></tr>
-      </table>
-      <p style="font-size:0.9rem; color:#888;">Payments via Stripe. 100% secure. No real-money payouts.</p>
+    <!-- RULES -->
+    <div id="rules" class="screen">
+      <button class="btn link" id="backRules">← BACK</button>
+      <div class="card">
+        <h2>📖 HOW TO PLAY</h2>
+        <ul>
+          <li>Bet 1 coin per round (auto-deducted).</li>
+          <li>Click <strong>POP!</strong> before the head pops.</li>
+          <li>Multiplier grows +0.5×/s. Crash at 2–30 s.</li>
+          <li>Payout = <code>1×multiplier×(1−5% rake)</code>.</li>
+        </ul>
+      </div>
     </div>
-  </div>
-
-  <!-- 5) RULES -->
-  <div id="rules" class="screen">
-    <button class="btn" id="backLobby2">← Back to Lobby</button>
-    <div class="card">
-      <h2>📖 How to Play</h2>
-      <ul>
-        <li>Bet some coins in the Shop.</li>
-        <li>Click "Play" to start a round.</li>
-        <li>The jack‐in‐the‐box head rises over <strong>2–30 seconds</strong>, multiplier grows 0.5×/s.</li>
-        <li>Click <strong>Pop!</strong> before it pops to bank <code>bet×multiplier×(1–5% rake)</code>.</li>
-        <li>If head pops first, you lose your bet.</li>
-        <li>Try to beat your High Score!</li>
-      </ul>
+    <!-- GAME -->
+    <div id="game" class="screen">
+      <button class="btn link" id="quitGame">← LOBBY</button>
+      <div id="mult">1.00×</div>
+      <div class="game-area">
+        <div id="head"></div>
+      </div>
+      <div class="progress-bar"><div></div></div>
+      <div id="controls">
+        <button class="btn" id="startBtn">START</button>
+        <button class="btn" id="popBtn" disabled>POP!</button>
+      </div>
     </div>
+    <footer>
+      ©2025 Jack Pop Pro — Virtual coins only • 5% house rake • 18+ • Play responsibly  
+    </footer>
   </div>
-
-  <!-- 6) LEADERBOARD -->
-  <div id="leaders" class="screen">
-    <button class="btn" id="backLobby3">← Back to Lobby</button>
-    <div class="card">
-      <h2>🏅 Leaderboard</h2>
-      <table id="leaderTable">
-        <tr><th>Player</th><th>High Score</th></tr>
-      </table>
-    </div>
-  </div>
-
-  <!-- 7) GAME -->
-  <div id="game" class="screen">
-    <div class="card" style="text-align:center;">
-      <h2>🎯 Jack Pop!</h2>
-      <p>Balance: 🪙<span id="balGame">0</span></p>
-      <p>Bet: 🪙<span id="betGame">0</span></p>
-      <button class="btn" id="popBtn">Pop!</button>
-      <p id="mult">1.00×</p>
-      <canvas id="canvas" width="500" height="300"></canvas>
-      <button class="btn" id="quitBtn">← Quit Round</button>
-    </div>
-  </div>
-
-  <!-- 8) FOOTER / DISCLAIMER -->
-  <footer>
-    Jack Pop Pro &copy;2025. All wagers in virtual coins—no cash withdrawals.  
-    5% house rake on winnings. Must be 18+. Play responsibly.
-  </footer>
-
-<script>
-/* ── App State & Storage ───────────────────────────────────────────────── */
-const LS = window.localStorage;
-let user = {
-  name: LS.getItem('jp_name') || '',
-  balance: +LS.getItem('jp_balance') || 0,
-  highScore: +LS.getItem('jp_high') || 1
-};
-
-/* ── DOM Refs ───────────────────────────────────────────────────────────── */
-const screens = ['ageGate','login','lobby','shop','rules','leaders','game'];
-function show(id){
-  screens.forEach(s=>document.getElementById(s).classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-const ageCheck = document.getElementById('ageCheck'),
-      ageNext  = document.getElementById('ageNext'),
-      loginBtn = document.getElementById('loginBtn'),
-      userIn   = document.getElementById('username'),
-      labelUser= document.getElementById('labelUser'),
-      balSpan  = document.getElementById('balance'),
-      highSpan = document.getElementById('highScore'),
-      toShop   = document.getElementById('toShop'),
-      toGame   = document.getElementById('toGame'),
-      toRules  = document.getElementById('toRules'),
-      toLeads  = document.getElementById('toLeaders'),
-      back1    = document.getElementById('backLobby1'),
-      back2    = document.getElementById('backLobby2'),
-      back3    = document.getElementById('backLobby3'),
-      leaderT  = document.getElementById('leaderTable'),
-      buyBtns  = document.querySelectorAll('.buy'),
-      popBtn   = document.getElementById('popBtn'),
-      quitBtn  = document.getElementById('quitBtn'),
-      betGame  = document.getElementById('betGame'),
-      balGame  = document.getElementById('balGame'),
-      multEl   = document.getElementById('mult'),
-      canvas   = document.getElementById('canvas'),
-      ctx      = canvas.getContext('2d');
-
-/* ── Age Gate ───────────────────────────────────────────────────────────── */
-ageCheck.onchange = ()=> ageNext.disabled = !ageCheck.checked;
-ageNext.onclick    = ()=> show('login');
-
-/* ── Login ──────────────────────────────────────────────────────────────── */
-loginBtn.onclick = ()=>{
-  const name = userIn.value.trim();
-  if(!name) return alert('Enter a nickname.');
-  user.name = name;
-  LS.setItem('jp_name', name);
-  showLobby();
-};
-
-/* ── Lobby / Shop / Rules / Leaders Navigation ───────────────────────────── */
-function showLobby(){
-  LS.setItem('jp_balance', user.balance);
-  LS.setItem('jp_high', user.highScore);
-  labelUser.textContent = user.name;
-  balSpan.textContent   = user.balance;
-  highSpan.textContent  = user.highScore.toFixed(2);
-  show('lobby');
-}
-toShop.onclick = ()=> show('shop');
-toGame.onclick = ()=>{
-  if(user.balance < 1) return alert('Buy coins first.');
-  startRound();
-};
-toRules.onclick= ()=> show('rules');
-toLeads.onclick= ()=> refreshLeaders() & show('leaders');
-back1.onclick  = back2.onclick = back3.onclick = ()=> show('lobby');
-
-/* ── Shop Purchase Logic (Stripe placeholder) ───────────────────────────── */
-buyBtns.forEach(btn=>{
-  btn.onclick = ()=> {
-    const coins  = +btn.dataset.coins;
-    const amount = +btn.dataset.amount;
-    // TODO: call your server/Stripe API here. For now simulate:
-    user.balance += coins;
-    showLobby();
-    alert(`Purchased ${coins} coins for $${amount}!`);
+  <script>
+  // ── State ─────────────────────────────────────────────────────────────────
+  let running=false, startT=0, crashT=0, balance=100, high=1, mult=1;
+  const rake = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--rake'));
+  // ── DOM Refs ───────────────────────────────────────────────────────────────
+  const screens = ['ageGate','login','lobby','rules','game'];
+  const show = id => {
+    screens.forEach(s=>document.getElementById(s).classList.remove('active'));
+    document.getElementById(id).classList.add('active');
   };
-});
-
-/* ── Leaderboard (reads from localStorage for demo) ──────────────────────── */
-function refreshLeaders(){
-  // In prod, fetch from server API
-  leaderT.innerHTML = '<tr><th>Player</th><th>High Score</th></tr>';
-  // For demo, only current user:
-  leaderT.innerHTML += `
-    <tr>
-      <td>${user.name}</td>
-      <td>${user.highScore.toFixed(2)}×</td>
-    </tr>`;
-}
-
-/* ── Game Mechanics ──────────────────────────────────────────────────────── */
-let crashT=0, startT=0, running=false, bet=1;
-function rndTime(){ return 2 + Math.random()*28; }
-
-function startRound(){
-  bet = Math.max(1, Math.min(user.balance, 1)); // fixed bet of 1 coin per round
-  user.balance -= bet; LS.setItem('jp_balance', user.balance);
-  balGame.textContent = user.balance;
-  betGame.textContent = bet;
-  crashT = rndTime();
-  startT = performance.now();
-  running= true;
-  popBtn.disabled = false;
-  quitBtn.disabled= false;
-  show('game');
-  requestAnimationFrame(gameLoop);
-}
-
-popBtn.onclick = ()=>{
-  if(!running) return;
-  running = false;
-  settle(true);
-};
-quitBtn.onclick = ()=>{
-  running = false;
-  settle(false);
-};
-
-function settle(cashed){
-  const rake = parseFloat(getComputedStyle(document.documentElement)
-                 .getPropertyValue('--rake'));
-  // compute final multiplier
-  const elapsed = (lastTs - startT)/1000;
-  const m = 1 + Math.min(elapsed, crashT)*0.5;
-  if(cashed && elapsed < crashT){
-    const payout = Math.floor(bet * m * (1 - rake));
-    user.balance += payout;
-    if(m > user.highScore) user.highScore = m;
-    alert(`You popped at ${m.toFixed(2)}× and won ${payout} coins!`);
-  } else {
-    alert('You waited too long—box popped! You lost your bet.');
+  const ageCheck = document.getElementById('ageCheck'),
+        ageNext  = document.getElementById('ageNext'),
+        loginBtn = document.getElementById('loginBtn'),
+        userIn   = document.getElementById('username'),
+        labelU   = document.getElementById('labelUser'),
+        balEl    = document.getElementById('balance'),
+        multEl   = document.getElementById('mult'),
+        head     = document.getElementById('head'),
+        bar      = document.querySelector('.progress-bar > div'),
+        startBtn = document.getElementById('startBtn'),
+        popBtn   = document.getElementById('popBtn'),
+        toRules  = document.getElementById('toRules'),
+        backRules= document.getElementById('backRules'),
+        toGame   = document.getElementById('toGame'),
+        quitGame = document.getElementById('quitGame');
+  // ── Age Gate ───────────────────────────────────────────────────────────────
+  ageCheck.onchange = ()=> ageNext.disabled = !ageCheck.checked;
+  ageNext.onclick    = ()=> show('login');
+  // ── Login ─────────────────────────────────────────────────────────────────
+  loginBtn.onclick = ()=>{
+    const name = userIn.value.trim();
+    if(!name) return alert('Enter a username');
+    labelU.textContent = name;
+    balEl.textContent  = balance;
+    show('lobby');
+  };
+  // ── Navigation ────────────────────────────────────────────────────────────
+  toRules.onclick = ()=> show('rules');
+  backRules.onclick = ()=> show('lobby');
+  toGame.onclick  = ()=> show('game');
+  quitGame.onclick= ()=> show('lobby');
+  // ── Game Logic ────────────────────────────────────────────────────────────
+  function rndTime(){ return 2 + Math.random()*28; }
+  function startRound(){
+    if(running) return;
+    if(balance < 1) return alert('Not enough coins');
+    balance--; balEl.textContent=balance;
+    crashT = rndTime(); startT = performance.now();
+    running = true;
+    startBtn.disabled = true; popBtn.disabled=false;
+    requestAnimationFrame(loop);
   }
-  LS.setItem('jp_balance', user.balance);
-  LS.setItem('jp_high', user.highScore);
-  showLobby();
-}
-
-let lastTs=0;
-function gameLoop(ts){
-  lastTs = ts;
-  const elapsed = (ts - startT)/1000;
-  const m = 1 + elapsed*0.5;
-  multEl.textContent = m.toFixed(2) + '×';
-  draw(Math.min(1, elapsed/crashT));
-
-  if(running){
-    if(elapsed >= crashT){
-      running = false;
+  function settle(cashed){
+    const elapsed = (performance.now()-startT)/1000;
+    const m = 1 + Math.min(elapsed, crashT)*0.5;
+    if(cashed && elapsed<crashT){
+      const payout = Math.floor(1*m*(1-rake));
+      balance += payout;
+      alert(`You popped at ${m.toFixed(2)}× and won ${payout} coins!`);
+      high = Math.max(high,m);
+    } else {
+      if(!cashed) alert('Too late—the head popped!');
+    }
+    balEl.textContent = balance;
+    running=false;
+    startBtn.disabled=false; popBtn.disabled=true;
+  }
+  startBtn.onclick = ()=> startRound();
+  popBtn.onclick   = ()=> running && settle(true);
+  function loop(ts){
+    if(!running) return;
+    const elapsed = (ts-startT)/1000;
+    mult = 1 + elapsed*0.5;
+    multEl.textContent = mult.toFixed(2)+'×';
+    // update head & bar
+    const p = Math.min(1, elapsed/crashT);
+    head.style.transform = `translateY(${100 - p*100}%)`;
+    bar.style.width = `${p*100}%`;
+    if(elapsed>=crashT){
       settle(false);
       return;
     }
-    requestAnimationFrame(gameLoop);
+    requestAnimationFrame(loop);
   }
-}
-
-function draw(progress){
-  ctx.clearRect(0,0,600,300);
-  const boxW=150, boxH=50, cx=300, floor=250, headR=30;
-  // box
-  ctx.fillStyle=varGet('--card');
-  ctx.fillRect(cx-boxW/2, floor, boxW, boxH);
-  // spring
-  ctx.strokeStyle='#888'; ctx.lineWidth=2;
-  for(let i=0;i<7;i++){
-    const t=i/6, x=cx-boxW/2 + t*boxW;
-    ctx.beginPath();
-    ctx.moveTo(x, floor);
-    ctx.lineTo(x + ((i%2)?10:-10), floor - headR/2);
-    ctx.stroke();
-  }
-  // head
-  const y = floor - progress*(floor - headR - 20);
-  ctx.fillStyle=varGet('--accent');
-  ctx.beginPath();
-  ctx.arc(cx, y, headR,0,2*Math.PI);
-  ctx.fill();
-}
-
-function varGet(n){ return getComputedStyle(document.documentElement).getPropertyValue(n); }
-
-/* ── Init ───────────────────────────────────────────────────────────────── */
-balSpan.textContent  = user.balance;
-highSpan.textContent = user.highScore.toFixed(2);
-</script>
+  </script>
 </body>
 </html> 
